@@ -1,0 +1,9 @@
+# ignore extensions
+*.pt
+*.ipynb
+
+
+# ignore dirictories
+log/
+save/
+__pycache__/
