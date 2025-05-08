@@ -55,7 +55,7 @@ class TokenEmbedding(nn.Module):
         for m in self.modules():
             if isinstance(m, nn.Conv1d):
                 nn.init.kaiming_normal_(
-                    tensor=m.weight(),
+                    tensor=m.weight,
                     mode='fan_in',
                     nonlinearity='leaky_relu'
                 )

@@ -78,8 +78,8 @@ class AnomalyAttention(nn.Module):
         sigma = torch.pow(3, sigma) - 1
         sigma = sigma.unsqueeze(-1).repeat(1, 1, 1, window_size) # B H L L
         prior = self.distances.unsqueeze(0).unsqueeze(0).repeat(
-            sigma.shape[0]
-        )
+            sigma.shape[0], sigma.shape[1], 1, 1
+        ).cuda()
         prior = (
             1.0 
             / (math.sqrt(2 * math.pi) * sigma)
@@ -100,35 +100,35 @@ class AttentionLayer(nn.Module):
         self,
         attention,
         d_model: int,
-        n_heads: int,
+        num_heads: int,
         d_keys = None,
         d_values = None,
     ) -> None:
         super().__init__()
-        d_keys = d_keys or (d_model // n_heads)
-        d_values = d_values or (d_model // n_heads)
+        d_keys = d_keys or (d_model // num_heads)
+        d_values = d_values or (d_model // num_heads)
         self.inner_attention = attention
         self.query_projection = nn.Linear(
             in_features=d_model,
-            out_features=d_keys * n_heads,
+            out_features=d_keys * num_heads,
         )
         self.key_projection = nn.Linear(
             in_features=d_model,
-            out_features=d_keys * n_heads,
+            out_features=d_keys * num_heads,
         )
         self.value_projection = nn.Linear(
             in_features=d_model,
-            out_features=d_keys * n_heads,
+            out_features=d_keys * num_heads,
         )
         self.sigma_projection = nn.Linear(
             in_features=d_model,
-            out_features=n_heads,
+            out_features=num_heads,
         )
         self.out_projection = nn.Linear(
-            in_features=d_values * n_heads,
+            in_features=d_values * num_heads,
             out_features=d_model,
         )
-        self.n_heads = n_heads
+        self.n_heads = num_heads
     
     def forward(
         self,
