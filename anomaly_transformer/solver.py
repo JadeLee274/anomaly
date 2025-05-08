@@ -49,6 +49,7 @@ class EarlyStopping:
         self.counter = 0
         self.best_score1 = None
         self.best_score2 = None
+        self.early_stop = False
         self.val_loss1_min = np.Inf
         self.val_loss2_min = np.Inf
         self.delta = delta
@@ -398,7 +399,7 @@ class Solver(object):
             
             metric = torch.softmax((-series_loss - prior_loss), dim=-1)
             cri = metric * loss
-            cri = cri.detacu().cpu().numpy()
+            cri = cri.detach().cpu().numpy()
             attens_energy.append(cri)
 
         attens_energy = np.concatenate(attens_energy, axis=0).reshape(-1)
