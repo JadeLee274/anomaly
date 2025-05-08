@@ -14,9 +14,11 @@ Matrix = np.ndarray
 
 
 def my_kl_loss(
-    p: Any,
-    q: Any,
+    p: torch.Tensor,
+    q: torch.Tensor,
 ) -> torch.Tensor:
+    p = p.clone()
+    q = q.clone()
     res = p * (torch.log(p + 0.0001)) - torch.log(q + 0.0001)
     return torch.mean(torch.sum(res, dim=-1), dim=1)
 
@@ -235,6 +237,7 @@ class Solver(object):
                 iter_count += 1
                 input = input_data.float().to(self.device)
                 output, series, prior, _ = self.model(input)
+
                 series_loss = 0.0
                 prior_loss = 0.0
 
@@ -243,12 +246,12 @@ class Solver(object):
                         torch.mean(
                             my_kl_loss(
                                 series[u],
-                                (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)).detach()
+                                (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)).clone().detach()
                             )
                         )
                         + torch.mean(
                             my_kl_loss(
-                                (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)).detach(),
+                                (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)).clone().detach(),
                                 series[u]
                             )
                         )
@@ -288,7 +291,8 @@ class Solver(object):
                     iter_count = 0
                     time_now = time.time()
 
-                loss1.backward(retain_graph = True)
+                # Minimax strategy
+                loss1.backward(retain_graph=True)
                 loss2.backward()
                 self.optimizer.step()
 
@@ -299,7 +303,7 @@ class Solver(object):
 
             print(
                 f"Epoch: {epoch + 1} | steps: {train_steps} | "+
-                f"Train Loss: {train_loss:.7f}, Vali Loss: {val_loss1:.7f}"
+                f"Train Loss: {train_loss:.7f}, Validation Loss: {val_loss1:.7f}"
             )
             early_stopping(val_loss1, val_loss2, self.model, path)
             if early_stopping.early_stop:

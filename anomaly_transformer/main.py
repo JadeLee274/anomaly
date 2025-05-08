@@ -39,7 +39,7 @@ if __name__ == '__main__':
         '--mode', type=str, default='train', choices=['train', 'test']
     )
     parser.add_argument('--data_path', type=str, default='../data/credit.csv')
-    parser.add_argument('--model_save_path', type=str, default='../save/anotran')
+    parser.add_argument('--model_save_path', type=str, default='/data/home/tmdals274/anomaly/save/anotran')
     parser.add_argument('--anomaly_ratio', type=float, default=4.00)
 
     config = parser.parse_args()
