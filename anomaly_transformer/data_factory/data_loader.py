@@ -34,6 +34,7 @@ class PSMSegLoader(object):
         self.train = self.scaler.transform(data) # normalize data
         
         test_data = pd.read_csv(data_path + '/test.csv')
+        test_data = test_data.values[:, 1:]
         test_data = np.nan_to_num(test_data)
         self.test = self.scaler.transform(test_data) # normalize without nan_to_num
 
@@ -71,7 +72,7 @@ class PSMSegLoader(object):
             )
         elif self.mode == 'val':
             return (
-                np.float32(self.val[index: index + self.win_size]),
+                np.float32(self.val[index: index + self.window_size]),
                 np.float32(self.test_labels[:self.window_size])
             )
         elif self.mode == 'test':
@@ -199,7 +200,7 @@ class SMAPSegLoader(object):
             return (self.train.shape[0] - self.window_size) // self.step + 1
         elif self.mode == 'val':
             return (self.val.shape[0] - self.window_size) // self.step + 1
-        elif self.mode == 'train':
+        elif self.mode == 'test':
             return (self.test.shape[0] - self.window_size) // self.step + 1
         else:
             return (self.test.shape[0] - self.window_size) // self.window_size + 1
@@ -221,7 +222,7 @@ class SMAPSegLoader(object):
         elif self.mode == 'test':
             return (
                 np.float32(self.test[index: index + self.window_size]),
-                np.float32(self.test_labels[: self.window_size])
+                np.float32(self.test_labels[index: index + self.window_size])
             )
         else:
             return (
@@ -272,7 +273,7 @@ class SMDSegLoader(object):
             return (self.train.shape[0] - self.window_size) // self.step + 1
         elif self.mode == 'val':
             return (self.val.shape[0] - self.window_size) // self.step + 1
-        elif self.mode == 'train':
+        elif self.mode == 'test':
             return (self.test.shape[0] - self.window_size) // self.step + 1
         else:
             return (self.test.shape[0] - self.window_size) // self.window_size + 1
@@ -294,7 +295,7 @@ class SMDSegLoader(object):
         elif self.mode == 'test':
             return (
                 np.float32(self.test[index: index + self.window_size]),
-                np.float32(self.test_labels[: self.window_size])
+                np.float32(self.test_labels[index: index + self.window_size])
             )
         else:
             return (
