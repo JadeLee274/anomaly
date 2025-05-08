@@ -42,7 +42,7 @@ class EncoderLayer(nn.Module):
         new_x, attention, mask, sigma = self.attention(
             x, x, x, attention_mask=attention_mask
         )
-        x += self.dropout(new_x)
+        x = x + self.dropout(new_x) # x += self.dropout(new_x) <- causes inplace error
         x = self.norm1(x)
         
         y = self.norm1(x).transpose(-1, 1)
@@ -147,3 +147,4 @@ class AnomalyTransformer(nn.Module):
             return enc_out, series, prior, sigmas
         else:
             return enc_out
+    
