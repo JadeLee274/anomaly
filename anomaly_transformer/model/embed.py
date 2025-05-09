@@ -17,13 +17,11 @@ class PositionalEmbedding(nn.Module):
         pe.requires_grad = False
 
         position = torch.arange(0, max_len).float().unsqueeze(1)
-        div_term = (
-            torch.arange(0, d_model, 2).float() 
-            * -(math.log(10000.0) / d_model)
-        ).exp()
+        div_term = (torch.arange(0, d_model, 2).float() * -(math.log(10000.0) / d_model)).exp()
 
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
+
         pe = pe.unsqueeze(0)
         self.register_buffer('pe', pe)
 
@@ -78,7 +76,7 @@ class DataEmbedding(nn.Module):
         super().__init__()
         self.value_embedding = TokenEmbedding(c_in=c_in, d_model=d_model)
         self.position_embedding = PositionalEmbedding(d_model=d_model)
-        self.dropout = nn.Dropout(dropout)
+        self.dropout = nn.Dropout(p=dropout)
 
     def forward(
         self,
