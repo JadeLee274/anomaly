@@ -80,11 +80,7 @@ class AnomalyAttention(nn.Module):
         prior = self.distances.unsqueeze(0).unsqueeze(0).repeat(
             sigma.shape[0], sigma.shape[1], 1, 1
         ).cuda()
-        prior = (
-            1.0 
-            / (math.sqrt(2 * math.pi) * sigma)
-            * torch.exp(-prior ** 2 / 2 / (sigma ** 2))
-        )
+        prior = 1.0 / (math.sqrt(2 * math.pi) * sigma) * torch.exp(-prior ** 2 / 2 / (sigma ** 2))
 
         series = self.dropout(torch.softmax(attention, dim=-1))
         V = torch.einsum("bhls,bshd->blhd", series, values)
@@ -107,6 +103,7 @@ class AttentionLayer(nn.Module):
         super().__init__()
         d_keys = d_keys or (d_model // num_heads)
         d_values = d_values or (d_model // num_heads)
+        self.norm = nn.LayerNorm(d_model)
         self.inner_attention = attention
         self.query_projection = nn.Linear(
             in_features=d_model,
@@ -118,7 +115,7 @@ class AttentionLayer(nn.Module):
         )
         self.value_projection = nn.Linear(
             in_features=d_model,
-            out_features=d_keys * num_heads,
+            out_features=d_values * num_heads,
         )
         self.sigma_projection = nn.Linear(
             in_features=d_model,
