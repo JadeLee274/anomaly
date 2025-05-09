@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from .attention import AnomalyAttention, AttentionLayer
-from .embed import DataEmbedding, TokenEmbedding
+from .embed import DataEmbedding
 Tensor = torch.Tensor
 
 
@@ -43,15 +43,9 @@ class EncoderLayer(nn.Module):
             x, x, x, attention_mask=attention_mask
         )
         x = x + self.dropout(new_x) # x += self.dropout(new_x) <- causes inplace error
-        x = self.norm1(x)
-        
-        y = self.norm1(x).transpose(-1, 1)
-        y = self.conv1(y)
-        y = self.activation(y)
-        y = self.dropout(y)
-        y = self.conv2(y).transpose(-1, 1)
-        y = self.dropout(y)
-
+        y = x = self.norm1(x)
+        y = self.dropout(self.activation(self.conv1(y.transpose(-1, 1))))
+        y = self.dropout(self.conv2(y).transpose(-1, 1))
         return self.norm2(x + y), attention, mask, sigma
     
 
@@ -103,10 +97,12 @@ class AnomalyTransformer(nn.Module):
     ) -> None:
         super().__init__()
         self.output_attention = output_attention
+
         self.embedding = DataEmbedding(
             c_in=enc_in,
             d_model=d_model,
             dropout=dropout)
+        
         self.encoder = Encoder(
             attention_layers=[
                 EncoderLayer(
@@ -132,7 +128,7 @@ class AnomalyTransformer(nn.Module):
         self.projection = nn.Linear(
             in_features=d_model,
             out_features=c_out,
-            bias=False,
+            bias=True,
         )
 
     def forward(
