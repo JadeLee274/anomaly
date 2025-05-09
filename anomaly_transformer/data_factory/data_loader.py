@@ -1,15 +1,7 @@
 from typing import *
-import os
-import pickle
-import random
-import collections
-import numbers
-import math
 import numpy as np
-import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 import pandas as pd
-from PIL import Image
 from sklearn.preprocessing import StandardScaler
 Matrix = np.ndarray
 
@@ -40,9 +32,7 @@ class PSMSegLoader(object):
 
         self.val = self.test
 
-        self.test_labels = pd.read_csv(
-            data_path + '/test_label.csv'
-        ).values[:, 1:]
+        self.test_labels = pd.read_csv(data_path + '/test_label.csv').values[:, 1:]
 
         print('train:', self.train.shape)
         print('test:', self.test.shape)
@@ -68,12 +58,12 @@ class PSMSegLoader(object):
         if self.mode == 'train':
             return (
                 np.float32(self.train[index: index + self.window_size]),
-                np.float32(self.test_labels[:self.window_size])
+                np.float32(self.test_labels[0: self.window_size])
             )
         elif self.mode == 'val':
             return (
                 np.float32(self.val[index: index + self.window_size]),
-                np.float32(self.test_labels[:self.window_size])
+                np.float32(self.test_labels[0: self.window_size])
             )
         elif self.mode == 'test':
             return (
@@ -137,15 +127,16 @@ class MSLSegLoader(object):
         self,
         index: int,
     ) -> Tuple[Matrix, Matrix]:
+        index = index * self.step
         if self.mode == 'train':
             return (
                 np.float32(self.train[index: index + self.window_size]),
-                np.float32(self.test_labels[: self.window_size])
+                np.float32(self.test_labels[0: self.window_size])
             )
         elif self.mode == 'val':
             return (
                 np.float32(self.val[index: index + self.window_size]),
-                np.float32(self.test_labels[: self.window_size])
+                np.float32(self.test_labels[0: self.window_size])
             )
         elif self.mode == 'test':
             return (
@@ -209,15 +200,16 @@ class SMAPSegLoader(object):
         self,
         index: int
     ) -> Tuple[Matrix, Matrix]:
+        index = index * self.step
         if self.mode == 'train':
             return (
                 np.float32(self.train[index: index + self.window_size]),
-                np.float32(self.test_labels[: self.window_size])
+                np.float32(self.test_labels[0: self.window_size])
             )
         elif self.mode == 'val':
             return (
                 np.float32(self.val[index: index + self.window_size]),
-                np.float32(self.test_labels[: self.window_size])
+                np.float32(self.test_labels[0: self.window_size])
             )
         elif self.mode == 'test':
             return (
@@ -282,6 +274,7 @@ class SMDSegLoader(object):
         self,
         index: int
     ) -> Tuple[Matrix, Matrix]:
+        index = index * self.step
         if self.mode == 'train':
             return (
                 np.float32(self.train[index: index + self.window_size]),
