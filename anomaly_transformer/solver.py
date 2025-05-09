@@ -10,16 +10,13 @@ from sklearn.metrics import accuracy_score
 from utils.utils import *
 from model.transformer import AnomalyTransformer
 from data_factory.data_loader import get_loader_segment
-Matrix = np.ndarray
 
 
 def my_kl_loss(
     p: torch.Tensor,
     q: torch.Tensor,
 ) -> torch.Tensor:
-    p = p.clone()
-    q = q.clone()
-    res = p * (torch.log(p + 0.0001)) - torch.log(q + 0.0001)
+    res = p * (torch.log(p + 0.0001) - torch.log(q + 0.0001))
     return torch.mean(torch.sum(res, dim=-1), dim=1)
 
 
@@ -92,9 +89,9 @@ class EarlyStopping:
     ) -> None:
         if self.verbose:
             print(
-                'Validation loss decreased:'
+                'Validation loss decreased: '
                 + f'({self.val_loss1_min:.6f} --> {val_loss1:.6f}).'
-                + 'Saving model ...'
+                + ' Saving model ...'
             )
         torch.save(
             obj=model.state_dict(),
@@ -198,17 +195,13 @@ class Solver(object):
                     )
                 )
 
-            series_loss /= len(prior)
-            prior_loss /= len(prior)
+            series_loss = series_loss / len(prior)
+            prior_loss = prior_loss / len(prior)
 
             reconstruction_loss = self.criterion(output, input)
 
-            loss1.append(
-                (reconstruction_loss - self.k * series_loss).item()
-            )
-            loss2.append(
-                (reconstruction_loss + self.k * prior_loss).item()
-            )
+            loss1.append((reconstruction_loss - self.k * series_loss).item())
+            loss2.append((reconstruction_loss + self.k * prior_loss).item())
 
         return np.average(loss1), np.average(loss2)
 
@@ -233,7 +226,7 @@ class Solver(object):
             epoch_time = time.time()
             self.model.train()
             
-            for i, (input_data, labels) in enumerate(self.train_loader):
+            for i, (input_data, _) in enumerate(self.train_loader):
                 self.optimizer.zero_grad()
                 iter_count += 1
                 input = input_data.float().to(self.device)
@@ -247,12 +240,12 @@ class Solver(object):
                         torch.mean(
                             my_kl_loss(
                                 series[u],
-                                (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)).clone().detach()
+                                (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)).detach()
                             )
                         )
                         + torch.mean(
                             my_kl_loss(
-                                (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)).clone().detach(),
+                                (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)).detach(),
                                 series[u]
                             )
                         )
@@ -272,23 +265,19 @@ class Solver(object):
                         )
                     )
 
-                series_loss /= len(prior)
-                prior_loss /= len(prior)
+                series_loss = series_loss / len(prior)
+                prior_loss = prior_loss / len(prior)
 
                 reconstruction_loss = self.criterion(output, input)
 
-                loss1_list.append(
-                    (reconstruction_loss - self.k * series_loss).item()
-                )
+                loss1_list.append((reconstruction_loss - self.k * series_loss).item())
                 loss1 = reconstruction_loss - self.k * series_loss
                 loss2 = reconstruction_loss + self.k * prior_loss
 
-                if (1 + 1) % 100 == 0:
+                if (i + 1) % 100 == 0:
                     speed = (time.time() - time_now) / iter_count
-                    left_time = speed * (
-                        (self.num_epochs - epoch) * train_steps - i
-                    )
-                    print(f'/tspeed: {speed:.4f}s/iter; left time: {left_time:.4f}')
+                    left_time = speed * ((self.num_epochs - epoch) * train_steps - i)
+                    print(f'\tspeed: {speed:.4f}s/iter; left time: {left_time:.4f}')
                     iter_count = 0
                     time_now = time.time()
 
@@ -349,8 +338,8 @@ class Solver(object):
                     ) * temperature
                 else:
                     series_loss += my_kl_loss(
-                        (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)),
-                        series[u].detach()
+                        series[u],
+                        (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)).detach()
                     ) * temperature
 
                     prior_loss += my_kl_loss(
@@ -388,8 +377,8 @@ class Solver(object):
                     ) * temperature
                 else:
                     series_loss += my_kl_loss(
-                        (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)),
-                        series[u].detach()
+                        series[u],
+                        (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)).detach()
                     ) * temperature
 
                     prior_loss += my_kl_loss(
@@ -412,10 +401,10 @@ class Solver(object):
         test_labels = []
         attens_energy = []
 
-        for _, (input_data, _) in enumerate(self.thre_loader):
+        for _, (input_data, labels) in enumerate(self.thre_loader):
             input = input_data.float().to(self.device)
             output, series, prior, _ = self.model(input)
-            loss = torch.mean(criterion(input, output))
+            loss = torch.mean(criterion(input, output), dim=-1)
             series_loss = 0.0
             prior_loss = 0.0
 
@@ -432,8 +421,8 @@ class Solver(object):
                     ) * temperature
                 else:
                     series_loss += my_kl_loss(
-                        (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)),
-                        series[u].detach()
+                        series[u],
+                        (prior[u] / torch.unsqueeze(torch.sum(prior[u], dim=-1), dim=-1).repeat(1, 1, 1, self.window_size)).detach()
                     ) * temperature
 
                     prior_loss += my_kl_loss(
@@ -441,6 +430,7 @@ class Solver(object):
                         series[u].detach()
                     ) * temperature
 
+            metric = torch.softmax((-series_loss - prior_loss), dim=-1)
             cri = metric * loss
             cri = cri.detach().cpu().numpy()
             attens_energy.append(cri)
@@ -450,13 +440,16 @@ class Solver(object):
         test_labels = np.concatenate(test_labels, axis=0).reshape(-1)
         test_energy = np.array(attens_energy)
         test_labels = np.array(test_labels)
+
         pred = (test_energy > thresh).astype(int)
         gt = test_labels.astype(int)
+
         print("pred:", pred.shape)
         print('gt:', gt.shape)
 
         # detection adjustment
         anomaly_state = False
+        
         for i in range(len(gt)):
             if gt[i] == 1 and pred[i] == 1 and not anomaly_state:
                 anomaly_state = True
@@ -477,19 +470,20 @@ class Solver(object):
             if anomaly_state:
                 pred[i] = 1
 
-            pred = np.array(pred)
-            gt = np.array(gt)
-            print('pred:', pred.shape)
-            print('gt:', gt.shape)
+        pred = np.array(pred)
+        gt = np.array(gt)
+
+        print('pred:', pred.shape)
+        print('gt:', gt.shape)
             
-            accuracy = accuracy_score(gt, pred)
-            precision, recall, f_score, support = prf(
-                gt, pred, average='binary',
-            )
+        accuracy = accuracy_score(gt, pred)
+        precision, recall, f_score, support = prf(
+            gt, pred, average='binary',
+        )
 
-            print(
-                f"Accuracy: {accuracy:.4f} | Precision: {precision:.4f}"
-                + f" | Recall: {recall:.4f} | F-score: {f_score:.4f}"
-            )
+        print(
+            f"Accuracy: {accuracy:.4f} | Precision: {precision:.4f}"
+            + f" | Recall: {recall:.4f} | F-score: {f_score:.4f}"
+        )
 
-            return accuracy, precision, recall, f_score
+        return accuracy, precision, recall, f_score
