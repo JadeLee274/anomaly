@@ -1,10 +1,10 @@
 from typing import *
 import torch
+from torch import Tensor
 import torch.nn as nn
 import torch.nn.functional as F
 from .attention import AnomalyAttention, AttentionLayer
 from .embed import DataEmbedding
-Tensor = torch.Tensor
 
 
 class EncoderLayer(nn.Module):
@@ -12,7 +12,7 @@ class EncoderLayer(nn.Module):
         self,
         attention,
         d_model: int,
-        d_ff: int = None,
+        d_ff: int,
         dropout: float = 0.1,
         activation: str = 'relu',
     ) -> None:

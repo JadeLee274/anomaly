@@ -2,10 +2,10 @@ from typing import *
 import os
 import numpy as np
 import torch
+from torch import Tensor
 import torch.nn as nn
 import math
 from math import sqrt
-Tensor = torch.Tensor
 
 
 class TriangularCausalMask():

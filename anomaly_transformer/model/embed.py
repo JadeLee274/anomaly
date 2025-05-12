@@ -1,9 +1,9 @@
 import torch
+from torch import Tensor
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils import weight_norm
 import math
-Tensor = torch.Tensor
 
 
 class PositionalEmbedding(nn.Module):

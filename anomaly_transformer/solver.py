@@ -3,6 +3,7 @@ import os
 import time
 import numpy as np
 import torch
+from torch import Tensor
 import torch.nn as nn
 import torch.nn.functional as F
 from sklearn.metrics import precision_recall_fscore_support as prf
@@ -13,9 +14,9 @@ from data_factory.data_loader import get_loader_segment
 
 
 def my_kl_loss(
-    p: torch.Tensor,
-    q: torch.Tensor,
-) -> torch.Tensor:
+    p: Tensor,
+    q: Tensor,
+) -> Tensor:
     res = p * (torch.log(p + 0.0001) - torch.log(q + 0.0001))
     return torch.mean(torch.sum(res, dim=-1), dim=1)
 
