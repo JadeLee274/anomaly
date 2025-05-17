@@ -4,11 +4,9 @@ import torch
 from torch import Tensor
 import torch.nn as nn
 from torch.nn import TransformerEncoder, TransformerDecoder
-import torch.optim as optim
-import pickle
 from utils.constants import *
 from .encoding import PositionalEncoding
-from .layers import Attention, TransformerEncoderLayer, TransformerDecoderLayer
+from .layers import TransformerEncoderLayer, TransformerDecoderLayer
     
 
 class TranADBasic(nn.Module):
