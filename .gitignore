@@ -2,6 +2,9 @@
 *.pt
 *.ipynb
 *.pdf
+*.png
+*.jpg
+*.gif
 
 # ignore dirictories
 log/

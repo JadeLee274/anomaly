@@ -1,7 +1,7 @@
 # anomaly
 
 Repo for anomaly detection study. 
-Mainly for studying papers, codes, and doing experiments.
+Mainly for studying papers, codes, and running experiments.
 
 ## Topics and github links
 
