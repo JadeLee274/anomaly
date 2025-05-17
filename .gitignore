@@ -1,7 +1,7 @@
 # ignore extensions
 *.pt
 *.ipynb
-
+*.pdf
 
 # ignore dirictories
 log/
