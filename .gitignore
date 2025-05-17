@@ -11,3 +11,5 @@ log/
 save/
 __pycache__/
 data/
+processed_data/
+checkpoints/
