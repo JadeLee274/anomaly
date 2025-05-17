@@ -3,7 +3,6 @@ import os
 import sys
 import pandas as pd
 import numpy as np
-import pickle
 import json
 from shutil import copyfile
 Vector = np.ndarray
