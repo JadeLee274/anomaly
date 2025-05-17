@@ -55,6 +55,9 @@ class TransformerEncoderLayer(nn.Module):
         self.dropout2 = nn.Dropout(dropout)
         self.activation = nn.LeakyReLU(True)
 
+    # As torch.nn.TransformerEncoder has argument 'is_causal', this forward pass
+    # should also have the same argument. Otherwise, there is TypeError:
+    # "TransformerEncoderLayer.forward() got an unexpected keyword argument 'is_causal"
     def forward(
         self,
         src: Tensor,
@@ -96,6 +99,9 @@ class TransformerDecoderLayer(nn.Module):
         self.dropout3 = nn.Dropout(dropout)
         self.activation = nn.LeakyReLU(True)
 
+    # As torch.nn.TransformerDecoder has arguments 'tgt_is_causal' and 'memory_is_causal',
+    # this forward pass should also have the same arguments.
+    # Otherwise, there is a TypeError.
     def forward(
         self,
         target: Tensor,
