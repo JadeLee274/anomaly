@@ -8,9 +8,9 @@ Mainly for studying papers, codes, and running experiments.
 ## Anomaly Transformer (ICLR 2022 Spotlight)
 - Github link: https://github.com/thuml/Anomaly-Transformer/tree/main
 
-- This paper assumes that, due to the continuity of time series, anomalies are strongly related to each other, buth weakly related to noraml data.
+- This paper assumes that, due to the continuity of time series, anomalies are strongly related to each other, but weakly related to noraml data.
 
-- Autheors suggests the additional attention layer based on the Gaussian kernel, which is named Anomaly Attention. This is the layer that calculates the attention score between data within the window, which is called Prior-Association. By the assumption on anomalies, anomalies have the high prior association, whereas the normal data don't.
+- Authors suggest the additional attention layer based on the Gaussian kernel, which is named Anomaly Attention. This is the layer that calculates the attention score between data within the window, which is called Prior-Association. By the assumption on anomalies, anomalies have the high prior association, whereas the normal data don't.
 
 - The Series-Association, is just the attention score of the vanilla transformer.
 
