@@ -5,6 +5,7 @@
 *.png
 *.jpg
 *.gif
+*.txt
 
 # ignore dirictories
 log/
