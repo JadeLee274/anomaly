@@ -7,6 +7,8 @@ Each architecture-based topics are listed below.
 # Transformer-based
 
 ## Anomaly Transformer (ICLR 2022, Spotlight)
+- Paper Link: https://arxiv.org/abs/2110.02642
+
 - Github link: https://github.com/thuml/Anomaly-Transformer/tree/main
 
 - This paper assumes that, due to the continuity of time series, anomalies are strongly related to each other, but weakly related to noraml data.
@@ -19,6 +21,8 @@ Each architecture-based topics are listed below.
 
 
 ## TranAD (VLDB 2022)
+- Paper link: https://arxiv.org/abs/2201.07284
+
 - Github link: https://github.com/imperial-qore/TranAD.git
 
 - The model is composed of one encoder and two decoders. At the first phase of training, the input passes the encoder, and then passes the first decoder. At the second phase, the output of first decoder passes the encoder, and then passes the second decoder.
@@ -34,6 +38,8 @@ Each architecture-based topics are listed below.
 # CNN-based
 
 ## TimesNet (ICLR 2023)
+- Paper link: https://arxiv.org/abs/2210.02186
+
 - Github link: https://github.com/thuml/TimesNet
 
 - There are many attemps to catch the temporal variaions of the data for the time series analysis (such as Anomaly Transformer). But before this paper, few attempts were made to catch more intrinsic variations of the data; for example, seasonality, trend, etc. This can be the matter of generalization to the real world data.
@@ -52,5 +58,7 @@ Each architecture-based topics are listed below.
 
 # Diffusion-based
 
-# DiffAD (KDD 2023)
+## DiffAD (KDD 2023)
+- Paper link: https://dl.acm.org/doi/10.1145/3580305.3599391
+
 - Github link: https://github.com/ChunjingXiao/DiffAD
