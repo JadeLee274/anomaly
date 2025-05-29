@@ -46,4 +46,11 @@ Each architecture-based topics are listed below.
 
 - But in the anomaly detection task, where the Anomaly Transformer is one of the baselines, authors changed the anomaly score of Anomaly Transformer from Association Discrepancy to Reconstruction error, for the fair comparison. This seems to be the tradeoff between focusing on the specific task and generalizing into various task.
 
-- Following the github link of TimesNet, the model is in the time series library made by authors (https://github.com/thuml/Time-Series-Library/tree/main), and we can run an experiment not only on TimesNet, but also on various models such as Autoformer, FEDformer, iTransformer, etc. I simplified the structure of the files related to TimesNet, so that we can only focus on the TSAD task.
+- Following the github link of TimesNet, the model is in the time series library made by authors (https://github.com/thuml/Time-Series-Library/tree/main), and we can run an experiment not only on TimesNet, but also on various models such as Autoformer, FEDformer, iTransformer, etc. But in this repository, I simplified the structure of the files related to TimesNet, so that we can only focus on the TSAD task.
+
+
+
+# Diffusion-based
+
+# DiffAD (KDD 2023)
+- Github link: https://github.com/ChunjingXiao/DiffAD
