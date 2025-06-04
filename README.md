@@ -4,7 +4,7 @@ Repo for anomaly detection study.
 Mainly for studying papers, codes, and running experiments.
 Each architecture-based topics are listed below.
 
-# Transformer-based
+# Attention & Transformer-based
 
 ## Anomaly Transformer (ICLR 2022, Spotlight)
 - Paper Link: https://arxiv.org/pdf/2110.02642
