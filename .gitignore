@@ -15,3 +15,4 @@ data/
 processed_data/
 checkpoints/
 test_results/
+temp/
