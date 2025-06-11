@@ -1,8 +1,6 @@
-# anomaly
+# About this repository:
 
-Repo for anomaly detection study. 
-Mainly for studying papers, codes, and running experiments.
-Each architecture-based topics are listed below.
+This repository is for anomaly detection study; mainly about studying papers, codes, and running experiments by myself. Each architecture-based topics are listed below.
 
 # Attention & Transformer-based
 
@@ -34,6 +32,14 @@ Each architecture-based topics are listed below.
 - The vanilla version of TranAD has a little number of parameters, so that it can be run on the CPU, with few amount of training time (reduced up to 99% compared to the baselines of TranAD), and decent score (increased up to 17% compared to the baselines).
 
 
+## DCDetector (KDD 2023)
+- Paper link: https://arxiv.org/pdf/2306.10347
+
+- Github link: https://github.com/DAMO-DI-ML/KDD2023-DCdetector
+
+- 
+
+
 
 # CNN-based
 
@@ -42,7 +48,7 @@ Each architecture-based topics are listed below.
 
 - Github link: https://github.com/thuml/TimesNet
 
-- There are many attemps to catch the temporal variaions of the data for the time series analysis (such as Anomaly Transformer). But before this paper, few attempts were made to catch more intrinsic variations of the data; for example, seasonality, trend, etc. This can be the matter of generalization to the real world data.
+- TimesNet is a foundation model for time series, that is, it is not only for the anomaly detection task, but also for forecasting, classification, and imputation. Before this paper, few attempts were made to catch more intrinsic variations of the data; for example, seasonality, trend, etc. TimesNet is a model for catching such variations, so that it can perform multiple tasks on time series. Although it lacks F1-score on the widely-used datasets in anomaly detection task (such as SMD, PSM, SMAP, MSL, SWaT) compared to Anomaly Transformre, it is notable that this model tries to analyze time series more intrinsically. (This is the reason why I put it in my repository.)
 
 - This architecture aims to catch such variations. Specifically, by applying the Fast Fourier Transform to data, one can decompose data into linear combination of periodic functions, with each period and frequency. By doing so, the 1D-tensor data is reshaped into 2D-tensor data, where the shape is period x frequency.
 
@@ -52,8 +58,7 @@ Each architecture-based topics are listed below.
 
 - But in the anomaly detection task, where the Anomaly Transformer is one of the baselines, authors changed the anomaly score of Anomaly Transformer from Association Discrepancy to Reconstruction error, for the fair comparison. This seems to be the tradeoff between focusing on the specific task and generalizing into various task.
 
-- Following the github link of TimesNet, the model is in the time series library made by authors (https://github.com/thuml/Time-Series-Library/tree/main), and we can run an experiment not only on TimesNet, but also on various models such as Autoformer, FEDformer, iTransformer, etc. But in this repository, I simplified the structure of the files related to TimesNet, so that we can only focus on the anomaly detection task.
-
+- Following the github link of TimesNet, the model is in the time series library made by authors (https://github.com/thuml/Time-Series-Library/tree/main), and we can run an experiment not only on TimesNet, but also on various models such as Autoformer, FEDformer, iTransformer, etc. But in this repository, I simplified the structure of the files related to TimesNet, so that we can only focus on the time series anomaly detection task. But remember, TimesNet is a foundation model, so it will be more useful to go to the time series library link and look at the original code.
 
 
 # Diffusion-based
@@ -62,3 +67,9 @@ Each architecture-based topics are listed below.
 - Paper link: https://dl.acm.org/doi/pdf/10.1145/3580305.3599391
 
 - Github link: https://github.com/ChunjingXiao/DiffAD
+
+- The time series data imputation task is to fill the gap between observed data.
+
+- DiffAD suggests that comparing the predicted data made by imputating the subset of training set using Diffusion model and the original data, it can detect anomaly on the test set. And it gained the better F1-score compared to the state-of-the-art-models like Anomaly Transformer.
+
+- Notably, the anomaly detection using diffusion-based imputation model like CSDI (See https://arxiv.org/pdf/2107.03502 and https://github.com/ermongroup/CSDI for more details on CSDI) gained the better F1-score compared to the baselines, except Anomaly Transformer. This indicates the possibility of the application of the methods for time series imputation to the time series anomaly detection.
