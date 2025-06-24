@@ -421,7 +421,7 @@ class AERCA(nn.Module):
             arr=self.us_mean_decoder,
         )
         np.save(
-            file=os.path.join(self.save_dir, f'{self.us_std_decoder}_us_std_decoder.npy'),
+            file=os.path.join(self.save_dir, f'{self.model_name}_us_std_decoder.npy'),
             arr=self.us_std_decoder,
         )
         
