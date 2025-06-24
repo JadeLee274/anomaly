@@ -6,12 +6,15 @@
 *.jpg
 *.gif
 *.txt
+*.npy
+*.log
 
 # ignore dirictories
 log/
 save/
 __pycache__/
 data/
+datasets/
 processed_data/
 checkpoints/
 test_results/
