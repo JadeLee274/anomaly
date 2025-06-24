@@ -8,13 +8,14 @@
 *.txt
 *.npy
 *.log
+*.csv
+*.xlsx
 
 # ignore dirictories
 log/
 save/
 __pycache__/
 data/
-datasets/
 processed_data/
 checkpoints/
 test_results/
