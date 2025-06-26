@@ -20,4 +20,19 @@
 
 - Here, the threshold and measure of dissimilarity are given as $\delta$ and $s$, respectively.
 
-- The shapelet anomaly is formulated as $s\left(\rho(.), \hat{\rho}(.)\right)$, where $\rho$ is the basic shapelet of the output of some ML/DL model.
+- The shapelet anomaly is formulated as $s(\rho(.), \hat{\rho}(.)) > \delta$, where $\rho$ is the shapelet of the original data, and $\hat{\rho}$ is that of the output of some ML/DL model.
+
+- The seasonal anomaly is formulated as $s(\omega, \hat{\omega}) > \delta$, where $\omega$ is the seasonality of the original data, and $\hat{\omega}$ is the seasonality of the output of some ML/DL model.
+
+- The trend anomaly is formulated as $s(\tau, \hat{\tau}) > \delta$, where $\tau$ is the trend of the original data, and $\hat{\tau}$ is the trend of the output of some ML/DL model.
+
+## Data Generation and F1-based Scores 
+- First of all, note that the deep-learning-based anomaly detection models are based on Autoencoder, RNN+LSTM, and GAN. Transformer or Diffusion backbones are not included in the paper. (Anomaly Transformer gained better/similar F1 score than the classical models that will be discussed in this section.)
+
+- Based on the formulations, authors coded the data generation process in both univariate, multivariate version. So that we can generate the synthesize time series anomaly detection dataset. We can customize the settings, of course.
+
+- Surprisingly, classical machine learning algorithms beat the Autoencoder-, LSTM+RNN- and GAN- based deep learning algorithms on the datasets.
+
+- Especially, Autoregression has shown the best performance in detecting contextual/shapelet. For the latter case, this is probably because AR uses contextuality for self-regression in windows.
+
+- Also, for the real world datasets, classical algorithms tend to detect anomalies better than the deep-learning-based algorithms. Especially GAN performed very poorly, possibly because of the various patterns of anomalies.
