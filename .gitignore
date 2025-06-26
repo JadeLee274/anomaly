@@ -1,23 +1,23 @@
 # ignore extensions
-*.pt
+*.csv
+*.gif
 *.ipynb
+*.jpg
+*.log
+*.npy
 *.pdf
 *.png
-*.jpg
-*.gif
+*.pt
 *.txt
-*.npy
-*.log
-*.csv
 *.xlsx
 
-# ignore dirictories
-log/
-save/
+# ignore directories
 __pycache__/
-data/
-processed_data/
 checkpoints/
-test_results/
-temp/
+data/
+log/
 practice/
+processed_data/
+save/
+temp/
+test_results/
