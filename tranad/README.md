@@ -1,4 +1,4 @@
-## TranAD (VLDB 2022)
+# TranAD (VLDB 2022)
 - Paper link: https://arxiv.org/pdf/2201.07284
 
 - Github link: https://github.com/imperial-qore/TranAD.git

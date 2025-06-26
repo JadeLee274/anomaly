@@ -1,4 +1,4 @@
-## TimesNet (ICLR 2023)
+# TimesNet (ICLR 2023)
 - Paper link: https://arxiv.org/pdf/2210.02186
 
 - Github link: https://github.com/thuml/TimesNet

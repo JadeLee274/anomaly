@@ -1,4 +1,4 @@
-## Anomaly Transformer (ICLR 2022, Spotlight)
+# Anomaly Transformer (ICLR 2022, Spotlight)
 - Paper Link: https://arxiv.org/pdf/2110.02642
 
 - Github link: https://github.com/thuml/Anomaly-Transformer/tree/main
