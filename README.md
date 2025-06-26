@@ -38,3 +38,14 @@ This repository is for anomaly detection study; mainly about studying papers, co
 - Autoencoder-based Granger causal discovery, the effective statistical hypothesis test for determining whether one time series is usiful in forecasting another. 
 
 - Decompose the t-th data point to the linear combination of previous data (i.e., window) and exogenous variables, and aims to learn the weights of them. 
+
+
+# Benchmark Datasets
+- In real life, the anomalies are extremely rare, and has various patterns and densities (for example, the continuity assumption of the Anomaly Transformer may not work well in some datasets), meaning that there is no generalizable anomaly detection model.
+
+- This section deals with generating the time series benchmark datasets, which helps analyzing the performance of anomaly detection models in various situations, such as different anomaly ratio, different anomaly pattern, etc. The generation of the dataset is based on the specific formulation of various kinds of anomalies. 
+
+## Revisiting Time Series Outlier Detection [NeurIPS 2021]
+- Defines and formulates the various kinds of anomalies, wich are coded so that the various kinds of datasets can be generated to analyze the performance of various models in various situations.
+
+- In many situations, the classical machine learning models may perform better than the deep learning models, especially Autoregression models.
