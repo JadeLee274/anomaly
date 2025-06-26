@@ -27,7 +27,7 @@
 - The trend anomaly is formulated as $s(\tau, \hat{\tau}) > \delta$, where $\tau$ is the trend of the original data, and $\hat{\tau}$ is the trend of the output of some ML/DL model.
 
 ## Data Generation and F1-based Scores 
-- First of all, note that the deep-learning-based anomaly detection models are based on Autoencoder, RNN+LSTM, and GAN. Transformer or Diffusion backbones are not included in the paper. (Anomaly Transformer gained better/similar F1 score than the classical models that will be discussed in this section.)
+- First of all, note that the deep-learning-based anomaly detection models are based on Autoencoder, RNN+LSTM, and GAN. Transformer or Diffusion backbones are not included in the paper. (Anomaly Transformer gained better/similar F1 score compared to the classical models that will be discussed in this section.)
 
 - Based on the formulations, authors coded the data generation process in both univariate, multivariate version. So that we can generate the synthesize time series anomaly detection dataset. We can customize the settings, of course.
 
