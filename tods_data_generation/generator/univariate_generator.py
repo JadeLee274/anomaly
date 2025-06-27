@@ -15,7 +15,7 @@ class UnivariateDataGenerator:
         self,
         stream_length: int,
         behavior: Callable[[float], float] = sine,
-        behavior_config: Optional[Dict[str, Callable[[float], float]]] = None,
+        behavior_config: Optional[Dict[str, float]] = None,
     ) -> None:
         self.stream_length = stream_length
         self.behavior = behavior
