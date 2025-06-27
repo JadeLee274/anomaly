@@ -38,7 +38,7 @@ class MultivariateDataGenerator:
         self.label = np.zeros(self.stream_length, dtype=int)
         return None
     
-    def point_global_outliers(
+    def point_global_anomalies(
         self,
         dim_no: int,
         ratio: float,
@@ -46,12 +46,12 @@ class MultivariateDataGenerator:
         radius: int,
     ) -> None:
         """
-        Add point global outliers to original data
+        Add point global anomalies to original data
 
         Args:
-            ratio: what ratio outliers will be added
-            factor: the larger, the outliers are farther from inliers
-            radius: the radirs of collective outliers range
+            ratio: what ratio anomalies will be added
+            factor: the larger, the anomalies are farther from inliers
+            radius: the radirs of collective anomalies range
         """
         position = (
             np.random.rand(round(self.stream_length * ratio)) * self.stream_length
@@ -70,7 +70,7 @@ class MultivariateDataGenerator:
         
         return None
     
-    def point_contextual_outliers(
+    def point_contextual_anomalies(
         self,
         dim_no: int,
         ratio: float,
@@ -78,13 +78,13 @@ class MultivariateDataGenerator:
         radius: int,
     ) -> None:
         """
-        Add collective global outliers to original data
+        Add collective global anomalies to original data
 
         Args:
-            ratio: what ratio outliers will be added
-            factor: the larger, the outliers are farther from inliers.
-                    Notice: point contextual outliers will not exceed the range of [min, max] of original data
-            radius: the radius of collective outliers range
+            ratio: what ratio anomalies will be added
+            factor: the larger, the anomalies are farther from inliers.
+                    Notice: point contextual anomalies will not exceed the range of [min, max] of original data
+            radius: the radius of collective anomalies range
         """
         position = (
             np.random.rand(round(self.stream_length * ratio)) * self.stream_length
@@ -103,7 +103,7 @@ class MultivariateDataGenerator:
         
         return None
     
-    def collective_global_outliers(
+    def collective_global_anomalies(
         self,
         dim_no: int,
         ratio: float,
@@ -117,15 +117,15 @@ class MultivariateDataGenerator:
         base: List[float] = [0., ]
     ) -> None:
         """
-        Add collective global outliers to original data
+        Add collective global anomalies to original data
 
         Args:
-            ratio: what ratio outliers will be added
-            radius: the radius of collective outliers range
+            ratio: what ratio anomalies will be added
+            radius: the radius of collective anomalies range
             option: if 'square': 'level' 'freq' and 'offset' are used to generate square sine wave
                     if 'other': 'base' is used to generate outlier shape
             level: how many sine waves will square_wave synthesis
-            base: a list of values that we want to substitute inliers when we generate outliers
+            base: a list of values that we want to substitute inliers when we generate anomalies
         """
         position = (
             np.random.rand(round(self.stream_length * ratio)) * self.stream_length
@@ -160,7 +160,7 @@ class MultivariateDataGenerator:
         
         return None
     
-    def collective_trend_outliers(
+    def collective_trend_anomalies(
         self,
         dim_no: int,
         ratio: float,
@@ -168,12 +168,12 @@ class MultivariateDataGenerator:
         radius: int,
     ) -> None:
         """
-        Add collective trend outliers to original data
+        Add collective trend anomalies to original data
 
         Args:
-            ratio: what ratio outliers will be added
+            ratio: what ratio anomalies will be added
             factor: how dramatic will the trend be
-            radius: the radius of collective outliers range
+            radius: the radius of collective anomalies range
         """
         position = (
             np.random.rand(round(self.stream_length * ratio)) * self.stream_length
@@ -189,7 +189,7 @@ class MultivariateDataGenerator:
 
         return None
     
-    def collective_seasonal_outliers(
+    def collective_seasonal_anomalies(
         self,
         dim_no: int,
         ratio: float,
@@ -197,12 +197,12 @@ class MultivariateDataGenerator:
         radius: int,
     ) -> None:
         """
-        Add collective seasonal outliers to original data
+        Add collective seasonal anomalies to original data
 
         Args:
-            ratio: what ratio outliers will be added
+            ratio: what ratio anomalies will be added
             factor: how many times will frequency multiple
-            radius: the radius of collective outliers range
+            radius: the radius of collective anomalies range
         """
         position = (
             np.random.rand(round(self.stream_length * ratio / (2 * radius))) *self.stream_length
@@ -237,19 +237,19 @@ if __name__ == '__main__':
         behavior=BEHAVIOR,
         behavior_config=BEHAVIOR_CONFIG,
     )
-    multivariate_data.point_global_outliers(
+    multivariate_data.point_global_anomalies(
         dim_no=0,
         ratio=0.05,
         factor=3.5,
         radius=5,
     )
-    multivariate_data.point_contextual_outliers(
+    multivariate_data.point_contextual_anomalies(
         dim_no=1,
         ratio=0.05,
         factor=2.5,
         radius=5,
     )
-    multivariate_data.collective_global_outliers(
+    multivariate_data.collective_global_anomalies(
         dim_no=2,
         ratio=0.05,
         radius=5,
@@ -260,13 +260,13 @@ if __name__ == '__main__':
         freq=0.04,
         offset=0.0,
     )
-    multivariate_data.collective_seasonal_outliers(
+    multivariate_data.collective_seasonal_anomalies(
         dim_no=3,
         ratio=0.05,
         factor=3,
         radius=5,
     )
-    multivariate_data.collective_trend_outliers(
+    multivariate_data.collective_trend_anomalies(
         dim_no=4,
         ratio=0.05,
         factor=0.5,
