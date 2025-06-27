@@ -50,7 +50,7 @@ class MultivariateDataGenerator:
 
         Args:
             ratio: what ratio anomalies will be added
-            factor: the larger, the anomalies are farther from inliers
+            factor: the larger, the anomalies are farther from normal data
             radius: the radirs of collective anomalies range
         """
         position = (
@@ -82,7 +82,7 @@ class MultivariateDataGenerator:
 
         Args:
             ratio: what ratio anomalies will be added
-            factor: the larger, the anomalies are farther from inliers.
+            factor: the larger, the anomalies are farther from normal data.
                     Notice: point contextual anomalies will not exceed the range of [min, max] of original data
             radius: the radius of collective anomalies range
         """
@@ -125,7 +125,7 @@ class MultivariateDataGenerator:
             option: if 'square': 'level' 'freq' and 'offset' are used to generate square sine wave
                     if 'other': 'base' is used to generate outlier shape
             level: how many sine waves will square_wave synthesis
-            base: a list of values that we want to substitute inliers when we generate anomalies
+            base: a list of values that we want to substitute normal data when we generate anomalies
         """
         position = (
             np.random.rand(round(self.stream_length * ratio)) * self.stream_length
