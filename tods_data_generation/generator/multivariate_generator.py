@@ -14,7 +14,7 @@ class MultivariateDataGenerator:
         dim: int,
         stream_length: int,
         behavior: List[Callable[[int, Vector, float, float], Vector]],
-        behavior_config: Optional[List[Dict[str, Any]]] = None,
+        behavior_config: Optional[List[Dict[str, float]]] = None,
     ) -> None:
         self.dim = dim
         self.stream_length = stream_length
