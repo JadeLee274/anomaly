@@ -81,6 +81,7 @@ class MultivariateDataGenerator:
         Add collective global anomalies to original data
 
         Args:
+            dim_no: anomaly is added to this feature
             ratio: what ratio anomalies will be added
             factor: the larger, the anomalies are farther from normal data.
                     Notice: point contextual anomalies will not exceed the range of [min, max] of original data
@@ -120,6 +121,7 @@ class MultivariateDataGenerator:
         Add collective global anomalies to original data
 
         Args:
+            dim_no: anomaly is added to this feature
             ratio: what ratio anomalies will be added
             radius: the radius of collective anomalies range
             option: if 'square': 'level' 'freq' and 'offset' are used to generate square sine wave
@@ -171,6 +173,7 @@ class MultivariateDataGenerator:
         Add collective trend anomalies to original data
 
         Args:
+            dim_no: anomaly is added to this feature
             ratio: what ratio anomalies will be added
             factor: how dramatic will the trend be
             radius: the radius of collective anomalies range
@@ -200,6 +203,7 @@ class MultivariateDataGenerator:
         Add collective seasonal anomalies to original data
 
         Args:
+            dim_no: anomaly is added to this feature
             ratio: what ratio anomalies will be added
             factor: how many times will frequency multiple
             radius: the radius of collective anomalies range
