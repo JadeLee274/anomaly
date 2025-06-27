@@ -8,9 +8,9 @@
 ## Point anomalies
 - Point anomalies are global anomlies (extreme values) and contextual anomalies (relatively small/large in context, e.g. windows; but not globally). Point anomalies are formulated into $|x_{t} - \hat{x}_{t}| > \delta$, where $\delta$ is a threshold. 
 
-- The threshold of global anomaly can be formulated as $\delta = \lambda \cdot \sigma(X)$, where $\lambda$ is the range and $\sigma$ is the standard deviation of the entire dataset X
+- The threshold of global anomaly can be formulated as $\delta = \lambda \cdot \sigma(X)$, where $\lambda$ is the scale about how far the anomlay is from the normal data, and $\sigma$ is the standard deviation of the entire dataset X
 
-- The threshold of contextual anomaly can be formulated as $\delta = \lambda \cdot \sigma(X_{(t-k: t+k)})$, where $\lambda$ is the coefficient of threshold, and $\sigma$ is the standard deviation of the window $X_{(t-k: t+k)}$.
+- The threshold of contextual anomaly can be formulated as $\delta = \lambda \cdot \sigma(X_{(t-k: t+k)})$, where $\lambda$ is similar to that of global anomaly, and $\sigma$ is the standard deviation of the window $X_{(t-k: t+k)}$.
 
 
 ## Pattern anomalies
