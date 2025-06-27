@@ -10,7 +10,7 @@
 
 - The threshold of global anomaly can be formulated as $\delta = \lambda \cdot \sigma(X)$, where $\lambda$ is the range and $\sigma$ is the standard deviation of the entire dataset X
 
-- The threshold of contextual anomaly can be formulated as $\delta = \lambda \cdot \sigma(X_(t-k: t+k))$, where $\lambda$ is the coefficient of threshold, and $\sigma$ is the standard deviation of the window $X_{(t-k: t+k)}$.
+- The threshold of contextual anomaly can be formulated as $\delta = \lambda \cdot \sigma(X_{(t-k: t+k)})$, where $\lambda$ is the coefficient of threshold, and $\sigma$ is the standard deviation of the window $X_{(t-k: t+k)}$.
 
 
 ## Pattern anomalies
@@ -20,11 +20,11 @@
 
 - Here, the threshold and measure of dissimilarity are given as $\delta$ and $s$, respectively.
 
-- The shapelet anomaly is formulated as $s(\rho(.), \hat{\rho}(.)) > \delta$, where $\rho$ is the shapelet of the original data, and $\hat{\rho}$ is that of the output of some ML/DL model.
+- The shapelet anomaly is formulated as $s(\rho(.), \hat{\rho}(.)) > \delta$, where $\rho$ is the shapelet of the original data, and $\hat{\rho}$ is that of the output of some ML/DL model - that is, a prediction.
 
-- The seasonal anomaly is formulated as $s(\omega, \hat{\omega}) > \delta$, where $\omega$ is the seasonality of the original data, and $\hat{\omega}$ is the seasonality of the output of some ML/DL model.
+- The seasonal anomaly is formulated as $s(\omega, \hat{\omega}) > \delta$, where $\omega$ is the seasonality of the original data, and $\hat{\omega}$ is the seasonality of the output of a prediction.
 
-- The trend anomaly is formulated as $s(\tau, \hat{\tau}) > \delta$, where $\tau$ is the trend of the original data, and $\hat{\tau}$ is the trend of the output of some ML/DL model.
+- The trend anomaly is formulated as $s(\tau, \hat{\tau}) > \delta$, where $\tau$ is the trend of the original data, and $\hat{\tau}$ is the trend of the output of a prediction.
 
 ## Data Generation and F1-based Scores 
 - First of all, note that the deep-learning-based anomaly detection models are based on Autoencoder, RNN+LSTM, and GAN. Transformer or Diffusion backbones are not included in the paper. (Anomaly Transformer gained better/similar F1 score compared to the classical models that will be discussed in this section.)
