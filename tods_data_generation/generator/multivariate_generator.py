@@ -49,6 +49,7 @@ class MultivariateDataGenerator:
         Add point global anomalies to original data
 
         Args:
+            dim_no: anomaly is added to this feature
             ratio: what ratio anomalies will be added
             factor: the larger, the anomalies are farther from normal data
             radius: the radirs of collective anomalies range
