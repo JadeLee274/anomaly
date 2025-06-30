@@ -1,5 +1,6 @@
 from typing import *
 import os
+import argparse
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -225,91 +226,229 @@ class MultivariateDataGenerator:
     
 
 if __name__ == '__main__':
-    # np.random.seed(100)
+    args = argparse.ArgumentParser()
+    args.add_argument(
+        '--seed',
+        type=int,
+        default=None,
+        help='Set seed. Default None'
+    )
+    # Whether to give one anomaly per feature or not. Default False.
+    # If true, the generation process follows the original code/paper.
+    args.add_argument(
+        '--separate_anomaly_types',
+        type=bool,
+        default=False,
+        help='Separate anomalies or not. If True, num_features is restricted to 5; if false, the choice of arguments are free, but choose the anomaly_ratio carefully.'
+    )
+    args.add_argument(
+        '--stream_length',
+        type=int,
+        default=400,
+        help='Length of the series'
+    )
+    args.add_argument(
+        '--num_features',
+        type=int,
+        default=5,
+        help='Dimension of the series'
+    )
+    args.add_argument(
+        '--anomaly_ratio',
+        type=float,
+        default=0.05,
+        help='Total ratio of anomalies'
+    )
+    args = args.parse_args()
 
-    BEHAVIOR = [sine, cosine, sine, cosine, sine]
-    BEHAVIOR_CONFIG = [
-        {'freq': 0.04, 'coef': 1.5, 'offset': 0.0, 'noise_amp': 0.05},
-        {'freq': 0.04, 'coef': 2.5, 'offset': 0.0, 'noise_amp': 0.05},
-        {'freq': 0.04, 'coef': 1.5, 'offset': 0.0, 'noise_amp': 0.05},
-        {'freq': 0.04, 'coef': 2.5, 'offset': 2.0, 'noise_amp': 0.05},
-        {'freq': 0.04, 'coef': 1.5, 'offset': -2.0, 'noise_amp': 0.05},
-    ]
-
-    multivariate_data = MultivariateDataGenerator(
-        dim=5,
-        stream_length=400,
-        behavior=BEHAVIOR,
-        behavior_config=BEHAVIOR_CONFIG,
-    )
-    multivariate_data.point_global_anomalies(
-        dim_no=0,
-        ratio=0.05,
-        factor=3.5,
-        radius=5,
-    )
-    multivariate_data.point_contextual_anomalies(
-        dim_no=1,
-        ratio=0.05,
-        factor=2.5,
-        radius=5,
-    )
-    multivariate_data.collective_global_anomalies(
-        dim_no=2,
-        ratio=0.05,
-        radius=5,
-        option='square',
-        coef=1.5,
-        noise_amp=0.03,
-        level=20,
-        freq=0.04,
-        offset=0.0,
-    )
-    multivariate_data.collective_seasonal_anomalies(
-        dim_no=3,
-        ratio=0.05,
-        factor=3,
-        radius=5,
-    )
-    multivariate_data.collective_trend_anomalies(
-        dim_no=4,
-        ratio=0.05,
-        factor=0.5,
-        radius=5,
-    )
-
-    df = pd.DataFrame(
-        {
-            'col_0': multivariate_data.data[0],
-            'col_1': multivariate_data.data[1],
-            'col_2': multivariate_data.data[2],
-            'col_3': multivariate_data.data[3],
-            'col_4': multivariate_data.data[4],
-            'anomaly': multivariate_data.label,
-        }
-    )
-
-    if not os.path.exists(DATA_SAVE_DIR):
-        os.makedirs(DATA_SAVE_DIR, exist_ok=True)
+    if args.seed:
+        np.random.seed(args.seed)
     
-    if not os.path.exists(IMG_SAVE_DIR):
-        os.makedirs(IMG_SAVE_DIR, exist_ok=True)
+    ANO_RATIO = args.anomaly_ratio / 5
+
+    DATA_SAVE_DIR_SPECIFIC = os.path.join(
+        DATA_SAVE_DIR,
+        f'dim_{args.num_features}',
+        f'len_{args.stream_length}'
+    )
+    IMG_SAVE_DIR_SPECIFIC = os.path.join(
+        IMG_SAVE_DIR, 
+        f'dim_{args.num_features}',
+        f'len_{args.stream_length}'
+    )
+
+    if not os.path.exists(DATA_SAVE_DIR_SPECIFIC):
+        os.makedirs(DATA_SAVE_DIR_SPECIFIC, exist_ok=True)
+    
+    if not os.path.exists(IMG_SAVE_DIR_SPECIFIC):
+        os.makedirs(IMG_SAVE_DIR_SPECIFIC, exist_ok=True)
+
+    # The case we don't want to separate anomaly types.
+    # That is, when we want to give various types of anomalies to each features.
+    if args.separate_anomaly_types:
+
+        BEHAVIOR = [sine, cosine, sine, cosine, sine]
+        BEHAVIOR_CONFIG = [
+            {'freq': 0.04, 'coef': 1.5, 'offset': 0.0, 'noise_amp': 0.05},
+            {'freq': 0.04, 'coef': 2.5, 'offset': 0.0, 'noise_amp': 0.05},
+            {'freq': 0.04, 'coef': 1.5, 'offset': 0.0, 'noise_amp': 0.05},
+            {'freq': 0.04, 'coef': 2.5, 'offset': 2.0, 'noise_amp': 0.05},
+            {'freq': 0.04, 'coef': 1.5, 'offset': -2.0, 'noise_amp': 0.05},
+        ]
+
+        multivariate_data = MultivariateDataGenerator(
+            dim=args.num_features,
+            stream_length=args.stream_length,
+            behavior=BEHAVIOR,
+            behavior_config=BEHAVIOR_CONFIG,
+            )
+        
+        multivariate_data.point_global_anomalies(
+            dim_no=0,
+            ratio=ANO_RATIO,
+            factor=3.5,
+            radius=5,
+            )
+        multivariate_data.point_contextual_anomalies(
+            dim_no=1,
+            ratio=ANO_RATIO,
+            factor=2.5,
+            radius=5,
+        )
+        multivariate_data.collective_global_anomalies(
+            dim_no=2,
+            ratio=ANO_RATIO,
+            radius=5,
+            option='square',
+            coef=1.5,
+            noise_amp=0.03,
+            level=20,
+            freq=0.04,
+            offset=0.0,
+        )
+        multivariate_data.collective_seasonal_anomalies(
+            dim_no=3,
+            ratio=ANO_RATIO,
+            factor=3,
+            radius=5,
+        )
+        multivariate_data.collective_trend_anomalies(
+            dim_no=4,
+            ratio=ANO_RATIO,
+            factor=0.5,
+            radius=5,
+        )
+
+        df = pd.DataFrame(
+            {
+                'col_0': multivariate_data.data[0],
+                'col_1': multivariate_data.data[1],
+                'col_2': multivariate_data.data[2],
+                'col_3': multivariate_data.data[3],
+                'col_4': multivariate_data.data[4],
+                'anomaly': multivariate_data.label,
+            }
+        )
+
+        plt.figure(figsize=(10, 15))
+        plt.subplot(511)
+        plt.plot(multivariate_data.timestamp, multivariate_data.data[0])
+        plt.subplot(512)
+        plt.plot(multivariate_data.timestamp, multivariate_data.data[1])
+        plt.subplot(513)
+        plt.plot(multivariate_data.timestamp, multivariate_data.data[2])
+        plt.subplot(514)
+        plt.plot(multivariate_data.timestamp, multivariate_data.data[3])
+        plt.subplot(515)
+        plt.plot(multivariate_data.timestamp, multivariate_data.data[4])
+        plt.savefig(os.path.join(
+            IMG_SAVE_DIR_SPECIFIC,
+            f'set_{len(os.listdir(IMG_SAVE_DIR_SPECIFIC))}.jpg')
+        )
+        plt.close()
+    
+    # The case when we want to give only one type of anomaly per dimension.
+    # In this case, the number of dimension is restricted to 5.
+    # This is the original code following the paper. 
+    else:
+        BEHAVIOR = []
+        BEHAVIOR_CONFIG = []
+
+        for i in range(args.num_features):
+            BEHAVIOR.append(np.random.choice([sine, cosine]))
+            coef = np.random.choice([1.5, 2.5])
+            offset = np.random.choice([-2.0, 0.0, 2.0])
+            BEHAVIOR_CONFIG.append(
+                {'freq': 0.04, 'coef': coef, 'offset': offset, 'noise_amp': 0.05}
+            )
+
+        multivariate_data = MultivariateDataGenerator(
+            dim=args.num_features,
+            stream_length=args.stream_length,
+            behavior=BEHAVIOR,
+            behavior_config=BEHAVIOR_CONFIG,
+        )
+
+        df = pd.DataFrame({})
+        for i in range(args.num_features):
+            multivariate_data.point_global_anomalies(
+                dim_no=i,
+                ratio=args.anomaly_ratio,
+                factor=3.5,
+                radius=5,
+            )
+            multivariate_data.point_contextual_anomalies(
+                dim_no=i,
+                ratio=args.anomaly_ratio,
+                factor=2.5,
+                radius=5,
+            )
+            multivariate_data.collective_global_anomalies(
+                dim_no=i,
+                ratio=args.anomaly_ratio,
+                radius=5,
+                option='square',
+                coef=1.5,
+                noise_amp=0.03,
+                level=20,
+                freq=0.04,
+                offset=0.0,
+            )
+            multivariate_data.collective_seasonal_anomalies(
+                dim_no=i,
+                ratio=args.anomaly_ratio,
+                factor=3,
+                radius=5,
+            )
+            multivariate_data.collective_trend_anomalies(
+                dim_no=i,
+                ratio=args.anomaly_ratio,
+                factor=0.5,
+                radius=5,
+            )
+            df[f'col_{i}'] = multivariate_data.data[i]
+        
+        df['anomaly'] = multivariate_data.label
+
+        plt.figure(figsize=(20, 100))
+
+        for i in range(1, args.num_features + 1):
+            plt.subplot(args.num_features, 1, i)
+            plt.plot(multivariate_data.timestamp, multivariate_data.data[i - 1])
+
+        plt.savefig(os.path.join(
+            IMG_SAVE_DIR_SPECIFIC,
+            f'set_{len(os.listdir(IMG_SAVE_DIR_SPECIFIC))}.jpg')
+        )
+        plt.close()
 
     df.to_csv(
-        path_or_buf=os.path.join(DATA_SAVE_DIR, f'set_{len(os.listdir(DATA_SAVE_DIR))}.csv'),
+        path_or_buf=os.path.join(
+            DATA_SAVE_DIR_SPECIFIC,
+            f'set_{len(os.listdir(DATA_SAVE_DIR_SPECIFIC))}.csv'
+        ),
         index=False,
     )
 
-    plt.figure(figsize=(10, 15))
-    plt.subplot(511)
-    plt.plot(multivariate_data.timestamp, multivariate_data.data[0])
-    plt.subplot(512)
-    plt.plot(multivariate_data.timestamp, multivariate_data.data[1])
-    plt.subplot(513)
-    plt.plot(multivariate_data.timestamp, multivariate_data.data[2])
-    plt.subplot(514)
-    plt.plot(multivariate_data.timestamp, multivariate_data.data[3])
-    plt.subplot(515)
-    plt.plot(multivariate_data.timestamp, multivariate_data.data[4])
-    plt.savefig(os.path.join(IMG_SAVE_DIR, f'set_{len(os.listdir(IMG_SAVE_DIR))}.jpg'))
-    plt.close()
+    ano_ratio = len(df[df['anomaly'] == 1]) / len(df['anomaly'])
+    print(f'Dataset generated: num_features {args.num_features} | length {args.stream_length} | anomaly ratio {ano_ratio}')
