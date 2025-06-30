@@ -32,7 +32,6 @@ def sine(
     return value
 
 
-
 def cosine(
     length: int,
     freq: float = 0.04,
