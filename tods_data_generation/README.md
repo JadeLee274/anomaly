@@ -29,7 +29,7 @@
 ## Data Generation and F1-based Scores 
 - First of all, note that the deep-learning-based anomaly detection models are based on Autoencoder, RNN+LSTM, and GAN. Transformer or Diffusion backbones are not included in the paper. (Anomaly Transformer gained better/similar F1 score compared to the classical models that will be discussed in this section.)
 
-- Based on the formulations, authors coded the data generation process in both univariate, multivariate version. So that we can generate the synthesize time series anomaly detection dataset. We can customize the settings, of course.
+- Based on the formulations, authors coded the data generation process in both univariate, multivariate version. So that we can generate the synthesize time series anomaly detection dataset. I modified the multivariate dataset generation code so that we can flexibly generate data. 
 
 - Surprisingly, classical machine learning algorithms beat the Autoencoder-, LSTM+RNN- and GAN- based deep learning algorithms on the datasets.
 
