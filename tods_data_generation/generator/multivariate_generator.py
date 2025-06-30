@@ -5,8 +5,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from utils import *
-DATA_SAVE_DIR = '../datasets/multivariate/data'
-IMG_SAVE_DIR = '../datasets/multivariate/data_img'
 
 
 class MultivariateDataGenerator:
@@ -264,24 +262,20 @@ if __name__ == '__main__':
     if args.seed:
         np.random.seed(args.seed)
     
+    if args.separate_anomaly_types:
+        DATA_SAVE_DIR = f'../datasets/multivariate/anomalies_separated/len_{args.stream_length}/data'
+        IMG_SAVE_DIR = f'../datasets/multivariate/anomalies_separated/len_{args.stream_length}/data_img'
+    else:
+        DATA_SAVE_DIR = f'../datasets/multivariate/anomalies_mixed/dim_{args.num_features}/len_{args.stream_length}/data'
+        IMG_SAVE_DIR = f'../datasets/multivariate/anomalies_mixed/dim_{args.num_features}/len_{args.stream_length}/data_img'
+
     ANO_RATIO = args.anomaly_ratio / 5
 
-    DATA_SAVE_DIR_SPECIFIC = os.path.join(
-        DATA_SAVE_DIR,
-        f'dim_{args.num_features}',
-        f'len_{args.stream_length}'
-    )
-    IMG_SAVE_DIR_SPECIFIC = os.path.join(
-        IMG_SAVE_DIR, 
-        f'dim_{args.num_features}',
-        f'len_{args.stream_length}'
-    )
-
-    if not os.path.exists(DATA_SAVE_DIR_SPECIFIC):
-        os.makedirs(DATA_SAVE_DIR_SPECIFIC, exist_ok=True)
+    if not os.path.exists(DATA_SAVE_DIR):
+        os.makedirs(DATA_SAVE_DIR, exist_ok=True)
     
-    if not os.path.exists(IMG_SAVE_DIR_SPECIFIC):
-        os.makedirs(IMG_SAVE_DIR_SPECIFIC, exist_ok=True)
+    if not os.path.exists(IMG_SAVE_DIR):
+        os.makedirs(IMG_SAVE_DIR, exist_ok=True)
 
     # The case we don't want to separate anomaly types.
     # That is, when we want to give various types of anomalies to each features.
@@ -350,20 +344,28 @@ if __name__ == '__main__':
             }
         )
 
+        df.to_csv(
+            path_or_buf=os.path.join(
+                DATA_SAVE_DIR,
+                f'set_{len(os.listdir(DATA_SAVE_DIR))}.csv'
+            ),
+            index=False,
+        )
+        ano_ratio = len(df[df['anomaly'] == 1]) / len(df['anomaly'])
+        print(f'Dataset generated: num_features {args.num_features} | length {args.stream_length} | anomaly ratio {ano_ratio}')
+
         plt.figure(figsize=(10, 15))
-        plt.subplot(511)
-        plt.plot(multivariate_data.timestamp, multivariate_data.data[0])
-        plt.subplot(512)
-        plt.plot(multivariate_data.timestamp, multivariate_data.data[1])
-        plt.subplot(513)
-        plt.plot(multivariate_data.timestamp, multivariate_data.data[2])
-        plt.subplot(514)
-        plt.plot(multivariate_data.timestamp, multivariate_data.data[3])
-        plt.subplot(515)
-        plt.plot(multivariate_data.timestamp, multivariate_data.data[4])
+
+        for i in range(1, 6):
+            plt.subplot(510 + i)
+            plt.plot(multivariate_data.timestamp, multivariate_data.data[i - 1])
+            plt.title(f'{i}-th feature')
+
+        plt.suptitle(f'num_features {args.num_features} | length {args.stream_length} | anomaly ratio {ano_ratio}')
+        plt.tight_layout()
         plt.savefig(os.path.join(
-            IMG_SAVE_DIR_SPECIFIC,
-            f'set_{len(os.listdir(IMG_SAVE_DIR_SPECIFIC))}.jpg')
+            IMG_SAVE_DIR,
+            f'set_{len(os.listdir(IMG_SAVE_DIR))}.jpg')
         )
         plt.close()
     
@@ -430,25 +432,27 @@ if __name__ == '__main__':
         
         df['anomaly'] = multivariate_data.label
 
-        plt.figure(figsize=(20, 100))
+        df.to_csv(
+            path_or_buf=os.path.join(
+                DATA_SAVE_DIR,
+                f'set_{len(os.listdir(DATA_SAVE_DIR))}.csv'
+            ),
+            index=False,
+        )
+
+        ano_ratio = len(df[df['anomaly'] == 1]) / len(df['anomaly'])
+        print(f'Dataset generated: num_features {args.num_features} | length {args.stream_length} | anomaly ratio {ano_ratio}')
+
+        plt.figure(figsize=(10, 7 * args.num_features))
 
         for i in range(1, args.num_features + 1):
             plt.subplot(args.num_features, 1, i)
             plt.plot(multivariate_data.timestamp, multivariate_data.data[i - 1])
+            plt.title(f'{i}-th feature')
 
+        plt.suptitle(f'num_features {args.num_features} | length {args.stream_length} | anomaly ratio {ano_ratio}')
         plt.savefig(os.path.join(
-            IMG_SAVE_DIR_SPECIFIC,
-            f'set_{len(os.listdir(IMG_SAVE_DIR_SPECIFIC))}.jpg')
+            IMG_SAVE_DIR,
+            f'set_{len(os.listdir(IMG_SAVE_DIR))}.jpg')
         )
         plt.close()
-
-    df.to_csv(
-        path_or_buf=os.path.join(
-            DATA_SAVE_DIR_SPECIFIC,
-            f'set_{len(os.listdir(DATA_SAVE_DIR_SPECIFIC))}.csv'
-        ),
-        index=False,
-    )
-
-    ano_ratio = len(df[df['anomaly'] == 1]) / len(df['anomaly'])
-    print(f'Dataset generated: num_features {args.num_features} | length {args.stream_length} | anomaly ratio {ano_ratio}')
