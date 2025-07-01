@@ -277,8 +277,9 @@ if __name__ == '__main__':
     if not os.path.exists(IMG_SAVE_DIR):
         os.makedirs(IMG_SAVE_DIR, exist_ok=True)
 
-    # The case we don't want to separate anomaly types.
-    # That is, when we want to give various types of anomalies to each features.
+    # The case when we want to give only one type of anomaly per dimension.
+    # In this case, the number of dimension is restricted to 5.
+    # This is the original code following the paper. 
     if args.separate_anomaly_types:
 
         BEHAVIOR = [sine, cosine, sine, cosine, sine]
@@ -369,9 +370,9 @@ if __name__ == '__main__':
         )
         plt.close()
     
-    # The case when we want to give only one type of anomaly per dimension.
-    # In this case, the number of dimension is restricted to 5.
-    # This is the original code following the paper. 
+    # The case we don't want to separate anomaly types.
+    # That is, when we want to give more variations to the dataset.
+    # Also in this case, you can customize the dimension of data.
     else:
         BEHAVIOR = []
         BEHAVIOR_CONFIG = []
