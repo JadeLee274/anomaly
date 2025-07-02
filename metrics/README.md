@@ -9,7 +9,8 @@ So, the ground truth label (that is, test set label) and the model output is giv
 
 By doing so, PA 'complements' the underestimated performance of the model. But, this leads to the overestimation of the performance of the model, since if the model can find only one point in the anomaly range, then PA considers that the model finds all point in the range. For example, when it comes to Anomaly Transformer trained and tested on PSM dataset, precision, recall, and F1 extremely varies. (For more examples and details, go to ../models/anomaly_transformer and run scripts.)
 
-| | Precision | Recall | F1 |
+| Precision | Recall | F1 |
+| :-------: | :-----: | :-----: |
 | with PA | 0.9723 | 0.9810 | 0.9760 |
 | w/o PA | 0.2834 | 0.0109 | 0.0210 |
 
