@@ -48,8 +48,8 @@ class EarlyStopping:
         self.best_score1 = None
         self.best_score2 = None
         self.early_stop = False
-        self.val_loss1_min = np.Inf
-        self.val_loss2_min = np.Inf
+        self.val_loss1_min = np.inf
+        self.val_loss2_min = np.inf
         self.delta = delta
         self.dataset = dataset_name
 
@@ -107,7 +107,7 @@ class Solver(object):
 
     def __init__(
         self,
-        config,
+        config: Dict[str, Any],
     ) -> None:
         self.__dict__.update(Solver.DEFAULTS, **config)
         self.train_loader = get_loader_segment(
@@ -449,27 +449,28 @@ class Solver(object):
         print('gt:', gt.shape)
 
         # detection adjustment
-        anomaly_state = False
-        
-        for i in range(len(gt)):
-            if gt[i] == 1 and pred[i] == 1 and not anomaly_state:
-                anomaly_state = True
-                for j in range(i, 0, -1):
-                    if gt[j] == 0:
-                        break
-                    else:
-                        if pred[j] == 0:
-                            pred[j] = 1
-                for j in range(i, len(gt)):
-                    if gt[j] == 0:
-                        break
-                    else:
-                        if pred[j] == 0:
-                            pred[j] = 1
-            elif gt[i] == 0:
-                anomaly_state = False
-            if anomaly_state:
-                pred[i] = 1
+        if self.use_point_adjustment:
+            anomaly_state = False
+            
+            for i in range(len(gt)):
+                if gt[i] == 1 and pred[i] == 1 and not anomaly_state:
+                    anomaly_state = True
+                    for j in range(i, 0, -1):
+                        if gt[j] == 0:
+                            break
+                        else:
+                            if pred[j] == 0:
+                                pred[j] = 1
+                    for j in range(i, len(gt)):
+                        if gt[j] == 0:
+                            break
+                        else:
+                            if pred[j] == 0:
+                                pred[j] = 1
+                elif gt[i] == 0:
+                    anomaly_state = False
+                if anomaly_state:
+                    pred[i] = 1
 
         pred = np.array(pred)
         gt = np.array(gt)
