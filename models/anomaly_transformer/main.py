@@ -35,13 +35,11 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=1024)
     parser.add_argument('--pretrained_model', type=str, default=None)
     parser.add_argument('--dataset', type=str, default='credit')
-    parser.add_argument(
-        '--mode', type=str, default='train', choices=['train', 'test']
-    )
+    parser.add_argument('--mode', type=str, default='train', choices=['train', 'test'])
     parser.add_argument('--data_path', type=str, default='../data/credit.csv')
     parser.add_argument('--model_save_path', type=str, default='/data/home/tmdals274/anomaly/save/anotran')
     parser.add_argument('--anomaly_ratio', type=float, default=4.00)
-
+    parser.add_argument('--use_point_adjustment', type=str2bool, default=True)
     config = parser.parse_args()
 
     args = vars(config)
