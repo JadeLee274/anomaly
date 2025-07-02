@@ -452,8 +452,7 @@ if __name__ == '__main__':
             plt.title(f'{i}-th feature')
 
         plt.suptitle(f'num_features {args.num_features} | length {args.stream_length} | anomaly ratio {ano_ratio}')
-        plt.savefig(os.path.join(
-            IMG_SAVE_DIR,
-            f'set_{len(os.listdir(IMG_SAVE_DIR))}.jpg')
+        plt.savefig(
+            os.path.join(IMG_SAVE_DIR, f'set_{len(os.listdir(IMG_SAVE_DIR))}.jpg')
         )
         plt.close()
