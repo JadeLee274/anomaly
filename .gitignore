@@ -15,6 +15,7 @@
 __pycache__/
 checkpoints/
 data/
+experiments/
 log/
 practice/
 processed_data/
