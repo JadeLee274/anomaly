@@ -1,8 +1,10 @@
 from typing import *
+import os
 import numpy as np
 from torch.utils.data import DataLoader
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+Vector = np.ndarray
 Matrix = np.ndarray
 
 
@@ -53,7 +55,7 @@ class PSMSegLoader(object):
     def __getitem__(
         self,
         index: int,
-    ) -> Tuple[Matrix, Matrix]:
+    ) -> Tuple[Matrix, Vector]:
         index = index * self.step
         if self.mode == 'train':
             return (
@@ -126,13 +128,14 @@ class MSLSegLoader(object):
     def __getitem__(
         self,
         index: int,
-    ) -> Tuple[Matrix, Matrix]:
+    ) -> Tuple[Matrix, Vector]:
         index = index * self.step
         if self.mode == 'train':
             return (
                 np.float32(self.train[index: index + self.window_size]),
                 np.float32(self.test_labels[0: self.window_size])
             )
+        # Tha label attatched to train set is a dummy label. See solver.py for more details.
         elif self.mode == 'val':
             return (
                 np.float32(self.val[index: index + self.window_size]),
@@ -199,7 +202,7 @@ class SMAPSegLoader(object):
     def __getitem__(
         self,
         index: int
-    ) -> Tuple[Matrix, Matrix]:
+    ) -> Tuple[Matrix, Vector]:
         index = index * self.step
         if self.mode == 'train':
             return (
@@ -273,7 +276,7 @@ class SMDSegLoader(object):
     def __getitem__(
         self,
         index: int
-    ) -> Tuple[Matrix, Matrix]:
+    ) -> Tuple[Matrix, Vector]:
         index = index * self.step
         if self.mode == 'train':
             return (
@@ -307,6 +310,90 @@ class SMDSegLoader(object):
             )
         
 
+class CreditSegLoader(object):
+    def __init__(
+        self,
+        data_path: str,
+        window_size: int,
+        step: int,
+        mode: str = 'train',
+    ) -> None:
+        self.mode = mode
+        self.step = step
+        self.window_size = window_size
+        self.scaler = StandardScaler()
+
+        data = pd.read_csv(os.path.join(data_path, 'creditcard.csv'))
+        data = data.values[:, 1:]
+        data = np.nan_to_num(data)
+
+        self.scaler.fit(data)
+        train_idx = round(0.8 * len(data))
+
+        train_data = data[:train_idx]
+        test_data = data[train_idx:]
+        train_data = train_data[train_data[:, -1] != 1] # elimanate abnormalities in train data
+
+        train_data = self.scaler.transform(train_data)
+        test_data = self.scaler.transform(test_data)
+
+        self.train = train_data[:, :-1] # separate labels of test data
+        test_labels = test_data[:, -1]
+
+        # put back each label value
+        self.test_labels = np.where(test_labels > 0, 1, 0)
+        self.test = test_data[:, :-1]
+        self.val = self.test
+
+        print('train:', self.train.shape)
+        print('test:', self.test.shape)
+
+    def __len__(self) -> int:
+        if self.mode == 'train':
+            return (self.train.shape[0] - self.window_size) // self.step + 1
+        elif self.mode == 'val':
+            return (self.val.shape[0] - self.window_size) // self.step + 1
+        elif self.mode == 'train':
+            return (self.test.shape[0] - self.window_size) // self.step + 1
+        else:
+            return (self.test.shape[0] - self.window_size) // self.window_size + 1
+        
+    def __getitem__(
+        self,
+        index: int,
+    ) -> Tuple[Matrix, Matrix]:
+        if self.mode == 'train':
+            return (
+                np.float32(self.train[index: index + self.window_size]),
+                np.float32(self.test_labels[: self.window_size])
+            )
+        elif self.mode == 'val':
+            return (
+                np.float32(self.val[index: index + self.window_size]),
+                np.float32(self.test_labels[: self.window_size])
+            )
+        elif self.mode == 'test':
+            return (
+                np.float32(self.test[index: index + self.window_size]),
+                np.float32(self.test_labels[index: index + self.window_size])
+            )
+        else:
+            return (
+                np.float32(
+                    self.test[
+                        index // self.step * self.window_size:
+                        index // self.step * self.window_size + self.window_size
+                    ]
+                ),
+                np.float32(
+                    self.test_labels[
+                        index // self.step * self.window_size: 
+                        index // self.step * self.window_size + self.window_size
+                    ]
+                )
+            )
+        
+
 def get_loader_segment(
     data_path: str,
     batch_size: int,
@@ -323,6 +410,10 @@ def get_loader_segment(
         dataset = SMAPSegLoader(data_path, window_size, 1, mode)
     elif dataset == 'PSM':
         dataset = PSMSegLoader(data_path, window_size, 1, mode)
+#    elif dataset == 'SWaT':
+#        dataset = SWaTSegLoader(data_path, window_size, 1, mode)
+    elif dataset == 'Credit':
+        dataset = CreditSegLoader(data_path, window_size, 1, mode)
     
     shuffle = False
     if mode == 'train':
