@@ -6,7 +6,6 @@
 *.log
 *.npy
 *.pdf
-*.png
 *.pt
 *.txt
 *.xlsx
