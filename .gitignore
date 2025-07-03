@@ -17,6 +17,7 @@ checkpoints/
 data/
 experiments/
 log/
+pics/
 practice/
 processed_data/
 save/
