@@ -21,20 +21,20 @@ class PSMSegLoader(object):
         self.window_size = window_size
         self.scaler = StandardScaler() # for normalization
 
-        data = pd.read_csv(data_path + '/train.csv')
+        data = pd.read_csv(os.path.join(data_path, 'train.csv'))
         data = data.values[:, 1:] # get values except index
         data = np.nan_to_num(data) # relplace nan, inf, -inf to number
         self.scaler.fit(data) # calculate mean and std of data
         self.train = self.scaler.transform(data) # normalize data
         
-        test_data = pd.read_csv(data_path + '/test.csv')
+        test_data = pd.read_csv(os.path.join(data_path, 'test.csv'))
         test_data = test_data.values[:, 1:]
         test_data = np.nan_to_num(test_data)
         self.test = self.scaler.transform(test_data) # normalize without nan_to_num
 
         self.val = self.test
 
-        self.test_labels = pd.read_csv(data_path + '/test_label.csv').values[:, 1:]
+        self.test_labels = pd.read_csv(os.path.join(data_path, 'test_label.csv')).values[:, 1:]
 
         print('train:', self.train.shape)
         print('test:', self.test.shape)
@@ -102,15 +102,15 @@ class MSLSegLoader(object):
         self.window_size = window_size
         self.scaler = StandardScaler()
         
-        data = np.load(data_path + '/MSL_train.npy')
+        data = np.load(os.path.join(data_path, 'MSL_train.npy'))
         self.scaler.fit(data)
         self.train = self.scaler.transform(data)
         
-        test_data = np.load(data_path + '/MSL_test.npy')
+        test_data = np.load(os.path.join(data_path, 'MSL_test.npy'))
         self.test = self.scaler.transform(test_data)
 
         self.val = self.test
-        self.test_labels = np.load(data_path + '/MSL_test_label.npy')
+        self.test_labels = np.load(os.path.join(data_path, 'MSL_test_label.npy'))
 
         print('train:', self.train.shape)
         print('test:', self.test.shape)
@@ -176,15 +176,15 @@ class SMAPSegLoader(object):
         self.window_size = window_size
         self.scaler = StandardScaler()
 
-        data = np.load(data_path + '/SMAP_train.npy')
+        data = np.load(os.path.join(data_path, 'SMAP_train.npy'))
         self.scaler.fit(data)
         self.train = self.scaler.transform(data)
 
-        test_data = np.load(data_path + '/SMAP_test.npy')
+        test_data = np.load(os.path.join(data_path, 'SMAP_test.npy'))
         self.test = self.scaler.transform(test_data)
 
         self.val = self.test
-        self.test_labels = np.load(data_path + '/SMAP_test_label.npy')
+        self.test_labels = np.load(os.path.join(data_path, 'SMAP_test_label.npy'))
 
         print('train:', self.train.shape)
         print('test:', self.test.shape)
@@ -236,6 +236,104 @@ class SMAPSegLoader(object):
             )
         
 
+class SWaTSegLoader(object):
+    def __init__(
+        self,
+        data_path: str,
+        window_size: int,
+        step: int,
+        mode: str = 'train',
+    ) -> None:
+        self.mode = mode
+        self.step = step
+        self.window_size = window_size
+        self.train_scaler = StandardScaler()
+        self.test_scaler = StandardScaler()
+
+        train_csv_path = os.path.join(data_path, 'SWaT_Normal.csv')
+        test_csv_path = os.path.join(data_path, 'SWaT_Abnormal.csv')
+
+        # The following annoated codes are for converting .xlsx into .csv.
+        # As SWaT data is given as .xlsx file, I added the code for convenience.
+        # Using these parts only once is sufficient. 
+
+        # train_data = pd.read_excel(
+        #     os.path.join(data_path, 'SWaT_Dataset_Normal_v1.xlsx'),
+        #     header=1,
+        # )
+        # train_data.to_csv(train_csv_path)
+        train_data = pd.read_csv(train_csv_path)
+        train_data.drop(columns=[' Timestamp', 'Normal/Attack'], inplace=True)
+        train_data = train_data.values[:, :-1]
+        self.train_scaler.fit(train_data)
+        self.train = self.train_scaler.transform(train_data)
+
+        # test_data = pd.read_excel(
+        #     os.path.join(data_path, 'SWaT_Dataset_Attack_v0.xlsx'),
+        #     engine='openpyxl',
+        #     header=1,
+        # )
+        # test_data.to_csv(test_csv_path)
+        test_data = pd.read_csv(test_csv_path)
+        test_data.drop(columns=[' Timestamp'], inplace=True)
+        test_data = test_data.values[:, 1:]
+        test_labels = test_data[:, -1]
+        test_labels = np.where(test_labels == 'Normal', 0, 1)
+        self.test_labels = test_labels
+        test_data = test_data[:, :-1]
+        self.test_scaler.fit(test_data)
+        self.test = self.test_scaler.transform(test_data)
+        self.val = self.test
+
+        ano_ratio = (test_labels[test_labels == 1]).sum() / len(test_labels)
+
+        print(f'Train Size: {len(self.train)}')
+        print(f'Test Size: {len(self.test)}') 
+        print(f'Anomaly Ratio: {(100 * ano_ratio):.2f}%\n')
+    
+    def __len__(self) -> int:
+        if self.mode == 'train':
+            return (self.train.shape[0] - self.window_size) // self.step + 1
+        elif self.mode == 'val':
+            return (self.val.shape[0] - self.window_size) // self.step + 1
+        elif self.mode == 'test':
+            return (self.test.shape[0] - self.window_size) // self.step + 1
+        else:
+            return (self.test.shape[0] - self.window_size) // self.window_size + 1
+        
+    def __getitem__(self, index: int) -> Tuple[Matrix, Vector]:
+        index = index * self.step
+        if self.mode == 'train':
+            return (
+                np.float32(self.train[index: index + self.window_size]),
+                np.float32(self.test_labels[: self.window_size])
+            )
+        elif self.mode == 'val':
+            return (
+                np.float32(self.val[index: index + self.window_size]),
+                np.float32(self.test_labels[: self.window_size])
+            )
+        elif self.mode == 'test':
+            return (
+                np.float32(self.test[index: index + self.window_size]),
+                np.float32(self.test_labels[index: index + self.window_size])
+            )
+        else:
+            return (
+                np.float32(
+                    self.test[
+                        index // self.step * self.window_size: 
+                        index // self.step * self.window_size + self.window_size
+                    ]
+                ),
+                np.float32(
+                    self.test_labels[
+                        index // self.step * self.window_size:
+                        index // self.step * self.window_size + self.window_size
+                    ]
+                )
+            )
+
 
 class SMDSegLoader(object):
     def __init__(
@@ -250,7 +348,7 @@ class SMDSegLoader(object):
         self.window_size = window_size
         self.scaler = StandardScaler()
 
-        data = np.load(data_path + '/SMD_train.npy')
+        data = np.load(os.path.join(data_path + '/SMD_train.npy'))
         self.scaler.fit(data)
         self.train = self.scaler.transform(data)
 
@@ -273,10 +371,7 @@ class SMDSegLoader(object):
         else:
             return (self.test.shape[0] - self.window_size) // self.window_size + 1
         
-    def __getitem__(
-        self,
-        index: int
-    ) -> Tuple[Matrix, Vector]:
+    def __getitem__(self, index: int) -> Tuple[Matrix, Vector]:
         index = index * self.step
         if self.mode == 'train':
             return (
@@ -362,6 +457,7 @@ class CreditSegLoader(object):
         self,
         index: int,
     ) -> Tuple[Matrix, Matrix]:
+        index = index * self.step
         if self.mode == 'train':
             return (
                 np.float32(self.train[index: index + self.window_size]),
@@ -410,8 +506,8 @@ def get_loader_segment(
         dataset = SMAPSegLoader(data_path, window_size, 1, mode)
     elif dataset == 'PSM':
         dataset = PSMSegLoader(data_path, window_size, 1, mode)
-#    elif dataset == 'SWaT':
-#        dataset = SWaTSegLoader(data_path, window_size, 1, mode)
+    elif dataset == 'SWaT':
+        dataset = SWaTSegLoader(data_path, window_size, 1, mode)
     elif dataset == 'Credit':
         dataset = CreditSegLoader(data_path, window_size, 1, mode)
     
