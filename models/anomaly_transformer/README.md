@@ -25,7 +25,7 @@ I first ran ./main.py setting that the anomaly ratio as 0.02. This is similar to
 
 Also, when the point-adjustment algorithm is not applied, the F1 score was severely low, compared to the F1 when PA was applied. This is the results on the banchmark datasets:
 
-| Dataset | F1-PA | F1${}_{PA}$ (Paper) | F1 |
+| Dataset | F1-PA | F1_PA (Paper) | F1 |
 | :-----: | :-----: | :-----: | :-----: |
 | PSM | 0.9760 | 0.9789 | 0.0210 |
 | MSL | 0.9418 | 0.9359 | 0.0201 |
@@ -33,4 +33,4 @@ Also, when the point-adjustment algorithm is not applied, the F1 score was sever
 | SMD | 0.9088 | 0.9233 | 0.0213 |
 | SWaT | 0.9334 | 0.9407 | 0.0245 |
 
-This shows that the F1 score can severely underestimate the model performance, and that F1$_{PA}$ can oversetimate the model performance when PA is applied.
+This shows that the F1 score can severely underestimate the model performance, and that F1-PA can oversetimate the model performance when PA is applied.
