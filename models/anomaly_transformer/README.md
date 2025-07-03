@@ -10,6 +10,22 @@ Also, authors suggests the novel anomaly score, which is called Association Disc
 
 Using the point-adjustment strategy, the model achieved the state-of-the-art performance compared to its baselines:
 
-<p align='center'>
-<img src='./pics/f1_scores.png' height='250' alt='' align=center />
+<p align="center">
+<img src="./pics/f1_scores.png" height="350" alt="" align=center />
 </p>
+
+## Issues
+But, it seems that it doesn't generalize to the dataset where there is no anomaly segment, like credit card fraud dataset. In this dataset, the anomaly ratio is 0.2%, and there is no anomaly segment. I added the dataloader for the dataset as follows:
+
+- Since the dataset is composed of only one csv file, I split the data into train set and test set, where the former is former 80% of the data, and the latter is latter 20% of the data.
+
+- Splitting data, processing data follows the original code of ./solver.py. Also I added additional part for splitting the test set into data and label.
+
+I first ran ./main.py setting that the anomaly ratio as 0.02. This is similar to the way of setting the anomaly ratio in the paper. After that, I set that the anomaly ratio as 0.2. In both process, Precision, Recall, and F1-score were 0.0000, which says that Anomaly Transformer may have generalizability issue when it comes to the time series dataset that there is little (or no) anomaly segment.
+
+Also, when the point-adjustment algorithm is not applied, the F1 score was severely low:
+
+| | Precision | Recall | F1 |
+| :-----: | :-----: | :-----: | :-----: |
+| with PA | 0.9723 | 0.9810 | 0.9760 |
+| w/o PA | 0.2834 | 0.0109 | 0.0210 |
