@@ -23,9 +23,11 @@ But, it seems that it doesn't generalize to the dataset where there is no anomal
 
 I first ran ./main.py setting that the anomaly ratio as 0.02. This is similar to the way of setting the anomaly ratio in the paper. After that, I set that the anomaly ratio as 0.2. In both process, Precision, Recall, and F1-score were 0.0000, which says that Anomaly Transformer may have generalizability issue when it comes to the time series dataset that there is little (or no) anomaly segment.
 
-Also, when the point-adjustment algorithm is not applied, the F1 score was severely low:
+Also, when the point-adjustment algorithm is not applied, the F1 score was severely low, compared to the F1 when PA was applied:
 
 | | Precision | Recall | F1 |
 | :-----: | :-----: | :-----: | :-----: |
 | with PA | 0.9723 | 0.9810 | 0.9760 |
 | w/o PA | 0.2834 | 0.0109 | 0.0210 |
+
+This shows that the F1 score underestimates the model performance when used with no adjustment; oversetimates the model performance when PA is applied.
