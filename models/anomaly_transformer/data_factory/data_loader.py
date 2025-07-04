@@ -488,6 +488,82 @@ class CreditSegLoader(object):
                     ]
                 )
             )
+
+
+class SyntheticSegLoader(object):
+    def __init__(
+        self,
+        data_path: str,
+        window_size: int,
+        step: int,
+        mode: str = 'train',
+    ) -> None:
+        self.mode = mode
+        self.step = step
+        self.window_size = window_size
+        self.scaler = StandardScaler()
+
+        data = pd.read_csv(data_path)
+        train_idx = int(0.8 * len(data))
+        train_data = data[:train_idx]
+        test_data = data[train_idx:]
+
+        self.train = train_data[train_data['anomaly'] == 0].drop(columns=['anomaly']).values
+        self.test = test_data.values[:, :-1]
+        self.test_labels = test_data.values[:, -1]
+        self.val = self.test
+
+        len_test = len(self.test_labels)
+        num_ano = (self.test_labels == 1).sum()
+        ano_ratio = 100 * num_ano / len_test
+
+        print(f'Train size: {len(self.train)} | Test size: {len(self.test)} | Anomaly ratio: {ano_ratio:.2f}%')
+    
+    def __len__(self) -> int:
+        if self.mode == 'train':
+            return (self.train.shape[0] - self.window_size) // self.step + 1
+        elif self.mode == 'val':
+            return (self.val.shape[0] - self.window_size) // self.step + 1
+        elif self.mode == 'train':
+            return (self.test.shape[0] - self.window_size) // self.step + 1
+        else:
+            return (self.test.shape[0] - self.window_size) // self.window_size + 1
+
+    def __getitem__(
+        self,
+        index: int,
+    ) -> Tuple[Matrix, Matrix]:
+        index = index * self.step
+        if self.mode == 'train':
+            return (
+                np.float32(self.train[index: index + self.window_size]),
+                np.float32(self.test_labels[: self.window_size])
+            )
+        elif self.mode == 'val':
+            return (
+                np.float32(self.val[index: index + self.window_size]),
+                np.float32(self.test_labels[: self.window_size])
+            )
+        elif self.mode == 'test':
+            return (
+                np.float32(self.test[index: index + self.window_size]),
+                np.float32(self.test_labels[index: index + self.window_size])
+            )
+        else:
+            return (
+                np.float32(
+                    self.test[
+                        index // self.step * self.window_size:
+                        index // self.step * self.window_size + self.window_size
+                    ]
+                ),
+                np.float32(
+                    self.test_labels[
+                        index // self.step * self.window_size: 
+                        index // self.step * self.window_size + self.window_size
+                    ]
+                )
+            )
         
 
 def get_loader_segment(
@@ -510,6 +586,8 @@ def get_loader_segment(
         dataset = SWaTSegLoader(data_path, window_size, 1, mode)
     elif dataset == 'Credit':
         dataset = CreditSegLoader(data_path, window_size, 1, mode)
+    elif dataset == 'Synthetic':
+        dataset = SyntheticSegLoader(data_path, window_size, 1, mode)
     
     shuffle = False
     if mode == 'train':
