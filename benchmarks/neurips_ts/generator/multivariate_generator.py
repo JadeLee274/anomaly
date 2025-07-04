@@ -7,6 +7,10 @@ import matplotlib.pyplot as plt
 from utils import *
 
 
+def str2bool(v):
+    return v.lower() in ('true')
+
+
 class MultivariateDataGenerator:
     def __init__(
         self,
@@ -235,7 +239,7 @@ if __name__ == '__main__':
     # If true, the generation process follows the original code/paper.
     args.add_argument(
         '--separate_anomaly_types',
-        type=bool,
+        type=str2bool,
         default=False,
         help='Separate anomalies or not. If True, num_features is restricted to 5; if false, the choice of arguments are free, but choose the anomaly_ratio carefully.'
     )
